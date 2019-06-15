@@ -1,0 +1,53 @@
+package evchargingstore.entity;
+
+import java.util.Date;
+import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import evchargingstore.mapper.CustomDateSerializer;
+
+@JsonInclude(Include.NON_NULL)
+public class ChargingSessionResponse {
+
+	private String id;
+	private Date startedAt;
+	private Date suspendedAt;
+	private ChargingSessionStatus status;
+
+	public ChargingSessionResponse() {
+		this.id = UUID.randomUUID().toString();
+	}
+
+	public String getId() {
+		return this.id;
+	}
+
+	@JsonSerialize(using = CustomDateSerializer.class)
+	public void setStartedAt(Date at) {
+		this.startedAt = at;
+	}
+
+	@JsonSerialize(using = CustomDateSerializer.class)
+	public void setSuspendedAt(Date at) {
+		this.suspendedAt = at;
+	}
+
+	public Date getStartedAt() {
+		return this.startedAt;
+	}
+
+	public Date getSuspendedAt() {
+		return this.suspendedAt;
+	}
+
+	public ChargingSessionStatus getStatus() {
+		return this.status;
+	}
+
+	public void setStatus(ChargingSessionStatus status) {
+		this.status = status;
+	}
+
+}

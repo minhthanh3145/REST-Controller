@@ -1,0 +1,19 @@
+package evchargingstore.facade;
+
+import evchargingstore.entity.ChargingSessionInfo;
+import evchargingstore.entity.ChargingSessionResponse;
+import evchargingstore.service.ChargingSessionService;
+
+public class ChargingSessionServiceFacade {
+	
+	private static ChargingSessionService chargingSessionService = ChargingSessionService.getInstance();
+
+	public static ChargingSessionResponse submitChargingSession(ChargingSessionInfo sessionInfo) {
+		return chargingSessionService.submitChargingSession(sessionInfo);
+	}
+
+	public static ChargingSessionResponse suspendChargingSession(String id, ChargingSessionInfo sessionInfo) {
+		return chargingSessionService.suspendChargingSession(id, sessionInfo);
+	}
+
+}

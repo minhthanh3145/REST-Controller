@@ -1,0 +1,21 @@
+package evchargingstore.repository;
+
+import org.springframework.stereotype.Repository;
+
+import evchargingstore.entity.ChargingSessionInfo;
+
+import java.util.Date;
+
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
+
+@Repository
+public interface ChargingSessionRepository extends CrudRepository<ChargingSessionInfo, String> {
+
+	@Query(value = "select count(id) from chargingsessioninfo where started_at >= startedAt", nativeQuery = true)
+	public int countByStartedAt(@Param("startedAt") Date startedAt);
+
+	@Query(value = "select count(id) from chargingsessioninfo where suspended_at >= suspendedAt", nativeQuery = true)
+	public int countBySuspendedAt(@Param("suspendedAt") Date suspendedAt);
+}

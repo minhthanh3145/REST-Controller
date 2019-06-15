@@ -1,0 +1,19 @@
+package evchargingstore.entity;
+
+public class ChargingSessionStatisticsResponse {
+	private int startedCount;
+	private int suspendedCount;
+
+	public ChargingSessionStatisticsResponse(int startedCount, int suspendedCount) {
+		this.startedCount = startedCount;
+		this.setSuspendedCount(suspendedCount);
+	}
+
+	public int getSuspendedCount() {
+		return suspendedCount;
+	}
+
+	public void setSuspendedCount(int suspendedCount) {
+		this.suspendedCount = suspendedCount;
+	}
+}

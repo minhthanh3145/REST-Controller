@@ -1,0 +1,5 @@
+package evchargingstore.util;
+
+public interface ValidUuid {
+
+}

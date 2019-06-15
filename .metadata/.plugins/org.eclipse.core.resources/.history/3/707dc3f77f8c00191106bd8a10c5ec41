@@ -1,0 +1,10 @@
+package evchargingstore.mapper;
+
+import java.util.Date;
+
+import com.fasterxml.jackson.databind.JsonSerializer;
+
+public class CustomDateSerializer extends JsonSerializer<Date>{
+	
+
+}

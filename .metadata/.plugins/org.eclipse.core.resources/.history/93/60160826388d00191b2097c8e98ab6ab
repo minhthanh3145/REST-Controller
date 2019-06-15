@@ -1,0 +1,5 @@
+package evchargingstore.repository;
+
+public class ChargingSessionRepository {
+
+}

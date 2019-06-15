@@ -1,0 +1,11 @@
+package evchargingstore.repository;
+
+import org.springframework.stereotype.Repository;
+import org.springframework.data.repository.CrudRepository;
+
+import evchargingstore.entity.ChargingSessionInfo;
+
+@Repository
+public interface ChargingSessionRepository extends CrudRepository {
+	
+}

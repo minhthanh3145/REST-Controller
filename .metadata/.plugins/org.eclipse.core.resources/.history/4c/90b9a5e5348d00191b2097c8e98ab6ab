@@ -1,0 +1,28 @@
+package evchargingstore.controller;
+
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import evchargingstore.entity.ChargingSessionInfo;
+import evchargingstore.entity.ChargingSessionResponse;
+import evchargingstore.facade.ChargingSessionServiceFacade;
+
+@RestController
+public class ChargingSessionController {
+
+	private ChargingSessionServiceFacade chargingSessionServiceFacade;
+
+	@RequestMapping(value = "/chargingSessions", method = RequestMethod.POST)
+	public ChargingSessionResponse submitChargingSession(@RequestBody ChargingSessionInfo session) {
+		return chargingSessionServiceFacade.submitChargingSession(session);
+	}
+
+	@RequestMapping(value = "/chargingSessions/{id}", method = RequestMethod.PUT)
+	public ChargingSessionResponse suspendChargingSession(@PathVariable(value = "id") String id,
+			@RequestBody ChargingSessionInfo session) {
+		return chargingSessionServiceFacade.suspendChargingSession(id, session);
+	}
+}

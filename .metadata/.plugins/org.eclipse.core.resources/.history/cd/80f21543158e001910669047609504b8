@@ -1,0 +1,111 @@
+package evchargingstore.test;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import evchargingstore.controller.ChargingSessionController;
+import evchargingstore.entity.ChargingSessionInfo;
+import evchargingstore.entity.ChargingSessionResponse;
+import evchargingstore.entity.ChargingSessionStatisticsResponse;
+import evchargingstore.entity.ChargingSessionStatus;
+import evchargingstore.facade.ChargingSessionServiceFacade;
+import evchargingstore.util.CustomDateFormatUtil;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+
+import java.io.UnsupportedEncodingException;
+import java.util.UUID;
+
+@RunWith(SpringRunner.class)
+@WebMvcTest(ChargingSessionController.class)
+public class ChargingSessionControllerMock {
+
+	@Autowired
+	private ObjectMapper objectMapper;
+
+	@Autowired
+	private MockMvc mvc;
+
+	@MockBean
+	private ChargingSessionServiceFacade facade;
+
+	@Test
+	public void TestSubmitChargingSession() throws UnsupportedEncodingException, Exception {
+		ChargingSessionInfo requestBodyEntity = new ChargingSessionInfo();
+		requestBodyEntity.setStartedAt(CustomDateFormatUtil.format("2019-05-06T19:00:20.529"));
+		ChargingSessionResponse expectedResponse = new ChargingSessionResponse(requestBodyEntity);
+		expectedResponse.setId(UUID.randomUUID().toString());
+		expectedResponse.setStatus(ChargingSessionStatus.STARTED);
+		String jsonBody = objectMapper.writeValueAsString(requestBodyEntity);
+
+		Mockito.when(facade.submitChargingSession(requestBodyEntity)).thenReturn(expectedResponse);
+
+		String content = mvc
+				.perform(post("/chargingSessions").contentType(MediaType.APPLICATION_JSON).content(jsonBody)
+						.characterEncoding("utf-8"))
+				.andExpect(status().isOk()).andDo(print()).andReturn().getResponse().getContentAsString();
+
+		Assert.assertEquals(expectedResponse, content);
+	}
+
+	@Test
+	public void TestSuspendChargingSession() throws JsonProcessingException, Exception {
+		ChargingSessionInfo requestBodyEntity = new ChargingSessionInfo();
+		requestBodyEntity.setSuspendedAt(CustomDateFormatUtil.format("2019-05-06T19:01:20.529"));
+
+		ChargingSessionResponse expectedResponse = new ChargingSessionResponse(requestBodyEntity);
+		String id = UUID.randomUUID().toString();
+		expectedResponse.setId(id);
+		expectedResponse.setStatus(ChargingSessionStatus.SUSPENDED);
+		expectedResponse.setSuspendedAt(CustomDateFormatUtil.format("2019-05-06T19:00:20.529"));
+		String jsonBody = objectMapper.writeValueAsString(requestBodyEntity);
+
+		Mockito.when(facade.suspendChargingSession(id, requestBodyEntity)).thenReturn(expectedResponse);
+
+		mvc.perform(put("/chargingSessions/" + id).contentType(MediaType.APPLICATION_JSON).content(jsonBody)
+				.characterEncoding("utf-8")).andExpect(status().isOk()).andDo(print())
+				.andExpect(content().json(objectMapper.writeValueAsString(expectedResponse)));
+	}
+
+	@Test
+	public void TestGetChargingSessionWithId() throws JsonProcessingException, Exception {
+		ChargingSessionInfo requestBodyEntity = new ChargingSessionInfo();
+		requestBodyEntity.setSuspendedAt(CustomDateFormatUtil.format("2019-05-06T19:01:20.529"));
+
+		ChargingSessionResponse expectedResponse = new ChargingSessionResponse(requestBodyEntity);
+		String id = UUID.randomUUID().toString();
+		expectedResponse.setId(id);
+		expectedResponse.setStatus(ChargingSessionStatus.SUSPENDED);
+		expectedResponse.setSuspendedAt(CustomDateFormatUtil.format("2019-05-06T19:00:20.529"));
+		String jsonBody = objectMapper.writeValueAsString(requestBodyEntity);
+
+		Mockito.when(facade.getChargingSession(id)).thenReturn(expectedResponse);
+
+		mvc.perform(get("/chargingSessions/" + id).contentType(MediaType.APPLICATION_JSON).content(jsonBody)
+				.characterEncoding("utf-8")).andExpect(status().isOk())
+				.andExpect(content().json(objectMapper.writeValueAsString(expectedResponse)));
+	}
+
+	@Test
+	public void TestGetChargingSession() throws JsonProcessingException, Exception {
+		ChargingSessionStatisticsResponse expectedResponse = new ChargingSessionStatisticsResponse(1, 1);
+		Mockito.when(facade.getChargingSessionStatistics()).thenReturn(expectedResponse);
+
+		mvc.perform(get("/chargingSummary")).andExpect(status().isOk())
+				.andExpect(content().json(objectMapper.writeValueAsString(expectedResponse)));
+	}
+
+}

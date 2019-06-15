@@ -1,0 +1,15 @@
+package evchargingstore.repository;
+
+import org.springframework.stereotype.Repository;
+
+import evchargingstore.entity.ChargingSessionInfo;
+
+import java.util.Date;
+
+import org.springframework.data.repository.CrudRepository;
+
+@Repository
+public interface ChargingSessionRepository extends CrudRepository<ChargingSessionInfo, String> {
+	
+	public int findByStartedAt(Date startedAt);
+}

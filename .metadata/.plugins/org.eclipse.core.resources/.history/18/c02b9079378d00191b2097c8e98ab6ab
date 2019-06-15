@@ -1,0 +1,25 @@
+package evchargingstore.facade;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import evchargingstore.entity.ChargingSessionInfo;
+import evchargingstore.entity.ChargingSessionResponse;
+import evchargingstore.service.ChargingSessionService;
+import evchargingstore.util.Facade;
+
+@Facade
+public class ChargingSessionServiceFacade {
+
+	@Autowired
+	private ChargingSessionService chargingSessionService;
+
+	public ChargingSessionResponse submitChargingSession(ChargingSessionInfo sessionInfo) {
+		// Posibility for a security service to check user's permission
+		return chargingSessionService.submitChargingSession(sessionInfo);
+	}
+
+	public ChargingSessionResponse suspendChargingSession(String id, ChargingSessionInfo sessionInfo) {
+		return chargingSessionService.suspendChargingSession(id, sessionInfo);
+	}
+
+}

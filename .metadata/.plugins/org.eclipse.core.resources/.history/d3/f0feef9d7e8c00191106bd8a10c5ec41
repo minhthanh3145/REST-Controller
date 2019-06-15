@@ -1,0 +1,28 @@
+package evchargingstore.facade;
+
+import evchargingstore.entity.ChargingSessionInfo;
+import evchargingstore.entity.ChargingSessionResponse;
+import evchargingstore.service.ChargingSessionService;
+
+public class ChargingSessionServiceFacade {
+	
+	private static class ChargingSessionServiceFacadeHolder {
+		private static final ChargingSessionServiceFacade _instance = new ChargingSessionServiceFacade();
+	}
+
+	// Initialization-on-demand holder idiom
+	public static ChargingSessionServiceFacade getInstance() {
+		return ChargingSessionServiceFacadeHolder._instance;
+	}
+
+	private ChargingSessionService chargingSessionService = ChargingSessionService.getInstance();
+
+	public ChargingSessionResponse submitChargingSession(ChargingSessionInfo sessionInfo) {
+		return chargingSessionService.submitChargingSession(sessionInfo);
+	}
+
+	public ChargingSessionResponse suspendChargingSession(String id, ChargingSessionInfo sessionInfo) {
+		return chargingSessionService.suspendChargingSession(id, sessionInfo);
+	}
+
+}

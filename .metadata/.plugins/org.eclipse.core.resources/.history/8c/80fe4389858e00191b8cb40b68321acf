@@ -1,0 +1,135 @@
+package evchargingstore.test;
+
+import java.util.Optional;
+import java.util.UUID;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.mockito.Mockito;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import evchargingstore.entity.ChargingSessionInfo;
+import evchargingstore.entity.ChargingSessionResponse;
+import evchargingstore.entity.ChargingSessionStatisticsResponse;
+import evchargingstore.entity.ChargingSessionStatus;
+import evchargingstore.util.CustomDateFormatUtil;
+
+public class ChargingSessionControllerTest extends AbstractControllerTest {
+	
+	// Will be populated by POST request and subsequentl used by other operations
+	private String testUuid = "";
+	
+	public void submitChargingSession() throws JsonProcessingException, Exception {
+		String endpoint = "/chargingSessions";
+		
+		ChargingSessionInfo bodyRequest = new ChargingSessionInfo();
+		bodyRequest.setStartedAt(CustomDateFormatUtil.format("2019-05-06T19:00:20.529"));
+		
+		ChargingSessionResponse expectedResponse = new ChargingSessionResponse();
+		expectedResponse.setStartedAt(CustomDateFormatUtil.format("2019-05-06T19:00:20.529"));
+		expectedResponse.setStatus(ChargingSessionStatus.STARTED);
+		
+		
+		MvcResult mvcResult = mvc.perform(
+				MockMvcRequestBuilders.post(endpoint)
+				.contentType(MediaType.APPLICATION_JSON)
+				.characterEncoding("utf-8")
+				.content(mapToJson(bodyRequest))
+				.accept(MediaType.APPLICATION_JSON))
+				.andDo(MockMvcResultHandlers.print())
+				.andReturn();
+		ChargingSessionResponse actualResponse = mapFromJson(mvcResult.getResponse().getContentAsString()
+				, ChargingSessionResponse.class);
+		testUuid = actualResponse.getId();
+		Assert.assertEquals(expectedResponse.getStartedAt(), actualResponse.getStartedAt());
+		Assert.assertEquals(expectedResponse.getStatus(), ChargingSessionStatus.STARTED);
+
+	}
+	
+	public void suspendChargingSession() throws JsonProcessingException, Exception {
+		String endpoint = "/chargingSessions";
+		String uuid = testUuid;
+		
+		ChargingSessionInfo bodyRequest = new ChargingSessionInfo();
+		bodyRequest.setSuspendedAt(CustomDateFormatUtil.format("2019-05-06T19:00:20.529"));
+		
+		ChargingSessionResponse expectedResponse = new ChargingSessionResponse();
+		expectedResponse.setId(uuid);
+		expectedResponse.setStartedAt(CustomDateFormatUtil.format("2019-05-06T19:00:20.529"));
+		expectedResponse.setSuspendedAt(CustomDateFormatUtil.format("2019-05-06T19:00:20.529"));
+		expectedResponse.setStatus(ChargingSessionStatus.SUSPENDED);
+						
+		MvcResult mvcResult = mvc.perform(
+				MockMvcRequestBuilders.put(endpoint + "/" + uuid)
+				.contentType(MediaType.APPLICATION_JSON)
+				.characterEncoding("utf-8")
+				.content(mapToJson(bodyRequest))
+				.accept(MediaType.APPLICATION_JSON))
+				.andDo(MockMvcResultHandlers.print())
+				.andReturn();
+		
+		ChargingSessionResponse actualResponse = mapFromJson(mvcResult.getResponse().getContentAsString()
+				, ChargingSessionResponse.class);
+		
+		Assert.assertEquals(expectedResponse.getId(), actualResponse.getId());
+		Assert.assertEquals(expectedResponse.getStartedAt(), actualResponse.getStartedAt());
+		Assert.assertEquals(expectedResponse.getSuspendedAt(), actualResponse.getStartedAt());
+		Assert.assertEquals(expectedResponse.getStatus(), ChargingSessionStatus.SUSPENDED);
+	}
+	
+	public void getChargingSession() throws JsonProcessingException, Exception {
+		String endpoint = "/chargingSessions";
+		String uuid = testUuid;
+		
+		ChargingSessionResponse expectedResponse = new ChargingSessionResponse();
+		expectedResponse.setId(uuid);
+		expectedResponse.setStartedAt(CustomDateFormatUtil.format("2019-05-06T19:00:20.529"));
+		expectedResponse.setSuspendedAt(CustomDateFormatUtil.format("2019-05-06T19:00:20.529"));
+		expectedResponse.setStatus(ChargingSessionStatus.SUSPENDED);
+						
+		MvcResult mvcResult = mvc.perform(
+				MockMvcRequestBuilders.get(endpoint + "/" + uuid)
+				.accept(MediaType.APPLICATION_JSON))
+				.andDo(MockMvcResultHandlers.print())
+				.andReturn();
+		
+		ChargingSessionResponse actualResponse = mapFromJson(mvcResult.getResponse().getContentAsString()
+				, ChargingSessionResponse.class);
+		
+		Assert.assertEquals(expectedResponse.getId(), actualResponse.getId());
+		Assert.assertEquals(expectedResponse.getStartedAt(), actualResponse.getStartedAt());
+		Assert.assertEquals(expectedResponse.getSuspendedAt(), actualResponse.getStartedAt());
+		Assert.assertEquals(expectedResponse.getStatus(), ChargingSessionStatus.SUSPENDED);
+	}
+	
+	public void getChargingSessionStatistics() throws JsonProcessingException, Exception {
+		String endpoint = "/chargingSessions";
+		String uuid = testUuid;
+		
+		ChargingSessionStatisticsResponse expectedResponse = new ChargingSessionStatisticsResponse(1, 1);
+						
+		MvcResult mvcResult = mvc.perform(
+				MockMvcRequestBuilders.get(endpoint)
+				.accept(MediaType.APPLICATION_JSON))
+				.andDo(MockMvcResultHandlers.print())
+				.andReturn();
+		
+		ChargingSessionStatisticsResponse actualResponse = mapFromJson(mvcResult.getResponse().getContentAsString()
+				, ChargingSessionStatisticsResponse.class);
+		
+		Assert.assertEquals(expectedResponse.getStartedCount(), actualResponse.getStartedCount());
+		Assert.assertEquals(expectedResponse.getSuspendedCount(), actualResponse.getSuspendedCount());
+	}
+	
+	@Test
+	public void testControllerForAllOperations() throws JsonProcessingException, Exception {
+		submitChargingSession();
+		suspendChargingSession();
+		getChargingSession();
+	}
+}

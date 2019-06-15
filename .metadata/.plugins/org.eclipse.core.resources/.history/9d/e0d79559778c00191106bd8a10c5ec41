@@ -1,5 +1,0 @@
-package util.deserializer;
-
-public class CustomDateDeserializer {
-
-}

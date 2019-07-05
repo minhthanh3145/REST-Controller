@@ -1,5 +1,5 @@
 # REST-Controller
-A Spring Boot application that implements basic functionalities of a REST service
+A Spring Boot application that implements a set of APIs.
 
 ## Prerequisite
 - An IDE that can import a maven project. 
